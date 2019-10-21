@@ -161,13 +161,13 @@ const api = {
 
   urlStringToConfigHash (urlString) {
     try {
-      const urlParts = url.parse(urlString);
+      const urlParts = url.parse(urlString, true);
       let result   = {
         database: urlParts.pathname.replace(/^\//,  ''),
         host:     urlParts.hostname,
         port:     urlParts.port,
         protocol: urlParts.protocol.replace(/:$/, ''),
-        ssl:      urlParts.query ? urlParts.query.indexOf('ssl=true') >= 0 : false
+        ssl:      urlParts.query ? urlParts.query.ssl === 'true' : false
       };
 
       if (urlParts.auth) {
@@ -175,6 +175,10 @@ const api = {
           username: urlParts.auth.split(':')[0],
           password: urlParts.auth.split(':')[1]
         });
+      }
+
+      if (urlParts.query) {
+        result.dialectOptions = urlParts.query;
       }
 
       return result;
